@@ -153,9 +153,6 @@ class Shop:
         return True
 
 
-# =========================
-# SESSION STATE + SAMPLE SHOPS
-# =========================
 if 'shops' not in st.session_state:
     st.session_state.shops = {}
 
@@ -188,9 +185,7 @@ if 'search_item_results' not in st.session_state:
     st.session_state.search_item_results = {}
 
 
-# =========================
-# HELPERS
-# =========================
+
 def authenticate_shop(shop_id: str, password: str) -> Optional[Shop]:
     shop = st.session_state.shops.get(shop_id)
     if shop and shop.password == password:
@@ -224,9 +219,7 @@ def perform_search(query):
     st.session_state.search_item_results = item_results
 
 
-# =========================
-# GLOBAL STYLES (CSS)
-# =========================
+#dto nyu edit ui
 st.markdown(
     f"""
     <style>
@@ -347,9 +340,7 @@ st.markdown(
 )
 
 
-# =========================
-# LOGIN PAGE
-# =========================
+
 def show_login_page():
     st.markdown('<div class="login-wrap">', unsafe_allow_html=True)
     left, center, right = st.columns([1, 2.4, 1])
@@ -394,12 +385,8 @@ def show_login_page():
     st.markdown('</div>', unsafe_allow_html=True)
 
 
-# =========================
-# HOME / APP
-# =========================
+
 def show_home_page():
-    # Polling mechanism: Reruns the script every 5000 milliseconds (5 seconds)
-    # This keeps the customer view synchronized with vendor updates.
     st_autorefresh(interval=5000, key="data_refresher_v4")
 
     with st.container():
@@ -469,7 +456,6 @@ def show_home_page():
     st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
     st.markdown("---")
 
-    # SEARCH VIEW
     if st.session_state.view_mode == 'search':
         st.subheader("Search Shops & Items")
         search_col1, search_col2 = st.columns([5, 1])
@@ -519,7 +505,6 @@ def show_home_page():
             if not shop_results and not item_results and query:
                 st.info("No results found.")
 
-    # SHOPS LIST VIEW
     elif st.session_state.view_mode == 'shops':
         st.session_state.search_shop_results = []
         st.session_state.search_item_results = []
@@ -541,7 +526,6 @@ def show_home_page():
                     st.rerun()
             st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
-    # SHOP DETAIL VIEW
     elif st.session_state.view_mode == 'shop_detail' and st.session_state.get('current_shop'):
         st.session_state.search_shop_results = []
         st.session_state.search_item_results = []
@@ -599,7 +583,6 @@ def show_home_page():
         else:
             st.write('No updates yet')
 
-    # VENDOR DASHBOARD
     elif st.session_state.view_mode == 'vendor_dashboard' and st.session_state.get('current_shop'):
         shop = st.session_state.shops[st.session_state.current_shop]
         st.subheader(f"Vendor Dashboard — {shop.name}")
@@ -665,12 +648,10 @@ def show_home_page():
                     avail = 'Available' if it.available else 'Sold Out'
                     cols[2].write(avail)
                     
-                    # Toggle Button Logic
                     if cols[3].button('Toggle', key=f"tog_v3_{shop.shop_id}_{it.item_id}", use_container_width=True):
                         shop.toggle_availability(cat_name, it.item_id, not it.available)
                         st.rerun()
-                    
-                    # Remove Button Logic
+
                     if cols[3].button('Remove', key=f"rem_v3_{shop.shop_id}_{it.item_id}", use_container_width=True):
                         shop.remove_item(cat_name, it.item_id)
                         st.rerun()
